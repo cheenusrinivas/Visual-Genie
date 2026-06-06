@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Multimodal AI System</title>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+
+        *{
+            margin:0;padding:0;box-sizing:border-box;
+            font-family:"Poppins",sans-serif;
+        }
+
+        :root{
+            --bg-main:#050507;
+            --accent-gold:#f7c567;
+            --accent-soft:#e3a93a;
+            --text:#f6f6ff;
+            --text-soft:#b7b7cf;
+        }
+
+        /* -------- BACKGROUND -------- */
+        body{
+            background:linear-gradient(135deg,#0c0c11,#13131d);
+            min-height:100vh;
+            display:flex;justify-content:center;
+            padding:50px;
+            color:var(--text);
+            font-size:16px; /* balanced size */
+        }
+
+        /* -------- MAIN CONTAINER -------- */
+        .container{
+            width:92%;
+            max-width:1500px;
+            padding:40px 50px;
+            border-radius:22px;
+            background:linear-gradient(120deg,#0b0b10,#14141d);
+            border:1px solid rgba(255,255,255,0.05);
+            box-shadow:0 18px 40px rgba(0,0,0,0.75);
+        }
+
+        /* -------- HEADER -------- */
+        h1{
+            text-align:center;
+            font-size:28px;
+            margin-bottom:10px;
+            font-weight:600;
+            letter-spacing:0.5px;
+        }
+        h1 span{color:var(--accent-gold);}
+
+        .subtitle{
+            text-align:center;
+            font-size:14px;
+            opacity:0.8;
+            margin-bottom:28px;
+        }
+
+        /* -------- CARD LAYOUT -------- */
+        .flex{
+            display:flex;
+            gap:40px;
+            justify-content:space-between;
+            flex-wrap:wrap;
+            margin-top:12px;
+        }
+
+        .card{
+            flex:1;
+            min-width:47%;
+            padding:28px;
+            border-radius:18px;
+            background:radial-gradient(circle at top,#1f1f2c,#120f18);
+            border:1px solid rgba(255,255,255,0.08);
+            box-shadow:0 14px 32px rgba(0,0,0,0.65);
+            position:relative;
+        }
+
+        /* subtle gold bar on card top */
+        .card::before{
+            content:"";
+            position:absolute;left:20px;right:20px;top:0;height:2px;
+            background:linear-gradient(90deg,var(--accent-gold),#756bff);
+        }
+
+        .card h2{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            font-size:17px;
+            margin-bottom:20px;
+            font-weight:600;
+        }
+        .card h2 i{color:var(--accent-gold);}
+
+        /* -------- INPUT + BUTTONS -------- */
+        label{
+            font-size:13px;
+            color:var(--text-soft);
+        }
+
+        input,button{
+            width:100%;
+            padding:10px;
+            font-size:15px;
+            border-radius:10px;
+            margin-top:10px;
+            border:none;
+            outline:none;
+        }
+
+        input{
+            background:#0c0c15;color:var(--text);
+            border:1px solid #33334a;
+        }
+        input::placeholder{color:#9a9ab0;}
+
+        button{
+            background:linear-gradient(to right,var(--accent-gold),var(--accent-soft));
+            color:#121010;font-weight:600;
+            cursor:pointer;
+            box-shadow:0 0 14px rgba(247,198,92,0.35);
+            transition:.22s ease;
+        }
+        button:hover{
+            transform:scale(1.03);
+            box-shadow:0 0 18px rgba(247,198,92,0.55);
+        }
+
+        img{
+            width:100%;
+            margin-top:14px;
+            border-radius:12px;
+            border:1px solid rgba(255,255,255,0.12);
+        }
+
+        .caption{
+            margin-top:14px;
+            padding:10px;
+            border-radius:10px;
+            background:#101018;
+            border:1px solid #2f2f48;
+            font-size:14.5px;
+        }
+
+        /* -------- LEGEND -------- */
+        .legend{
+            margin-top:45px; /* visible without scrolling */
+            padding:20px 22px;
+            border-radius:16px;
+            background:#101018;
+            border:1px solid #2c2c42;
+        }
+        .legend p{
+            font-size:18px;
+            margin-bottom:10px;
+            color:var(--accent-gold);
+            font-weight:600;
+        }
+        .legend ul{
+            margin-left:22px;
+            font-size:15.5px;
+            line-height:1.6;
+            color:#dcdcf1;
+        }
+        .legend b{color:#fff;font-weight:600;}
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1><span>Multimodal AI</span> — Image Captioning & Text Search</h1>
+    <div class="subtitle">BLIP for Captions · CLIP for Semantic Retrieval</div>
+
+    <div class="flex">
+
+        <!-- IMAGE → CAPTION -->
+        <div class="card">
+            <h2><i class="fa-solid fa-image"></i> Upload Image → Generate Caption</h2>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label>Select an image:</label>
+                <input type="file" name="image" required>
+                <button type="submit">Generate Caption</button>
+            </form>
+
+            {% if image_url %}
+                <img src="{{ image_url }}" alt="Uploaded Image">
+            {% endif %}
+
+            {% if caption %}
+                <div class="caption">"{{ caption }}"</div>
+            {% endif %}
+        </div>
+
+
+        <!-- TEXT → IMAGE -->
+        <div class="card">
+            <h2><i class="fa-solid fa-magnifying-glass"></i> Search Images by Text</h2>
+
+            <form method="POST">
+                {% csrf_token %}
+                <label>Search (natural language):</label>
+                <input type="text" name="query" placeholder="e.g. yellow porsche 911, persian cat, biryani" required>
+                <button type="submit">Find Match</button>
+            </form>
+
+            {% if search_result %}
+                <img src="{{ search_result }}" alt="Result Image">
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- LEGEND SECTION -->
+    <div class="legend">
+        <p>📌 Searchable Categories (Demo Dataset)</p>
+        <ul>
+            <li><b>Animals:</b> persian cat, sphinx cat, golden retriever, husky, shih tzu</li>
+            <li><b>Cars:</b> BMW M2 (red/blue), M3 (black/orange), M5 (white/green), Porsche 911 (red/yellow), Macan (black/blue)</li>
+            <li><b>Food:</b> biryani, pizza, cake, bread, idli</li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>
